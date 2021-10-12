@@ -91,8 +91,11 @@ jobs:
         env:
           service_account: echo "${{ secrets.PLAY_STORE_SERVICE_ACCOUNT }}" | base64 --decode
 
+      # - name: Build
+      #   run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
+
       - name: Build
-        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
+        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{env.version}} --build-number=${{env.build_number}} --dart-define=${{ inputs.args }}
         
       - name: Release to Google Play
         run: |

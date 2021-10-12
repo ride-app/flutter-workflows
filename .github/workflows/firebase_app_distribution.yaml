@@ -81,8 +81,12 @@ jobs:
       - name: Get build name 
         run: echo version=$(echo $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0) | cut -b 2-).$(git rev-list $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0).. --count) >> $GITHUB_ENV
 
+      # - name: Build
+      #   run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
+
       - name: Build
-        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
+        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{env.version}} --build-number=${{env.build_number}} --dart-define=${{ inputs.args }}
+        
         
       - name: Upload to Firebase
         run: bundle exec fastlane ${{ inputs.lane-name }}
