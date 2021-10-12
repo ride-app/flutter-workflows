@@ -1,0 +1,104 @@
+name: Release
+
+on:
+  workflow_call:
+    inputs:
+      entrypoint:
+        required: false
+        type: string
+        default: 'main.dart'
+      build-name:
+        required: false
+        type: string
+        default: '0.0.1'
+      build-number:
+        required: false
+        type: number
+        default: 1
+      track:
+        required: false
+        type: string
+        default: 'production'
+      keystore-path:
+        required: false
+        type: string
+        default: 'android/app/keystore.jks'
+      keystore-properties-path:
+        required: false
+        type: string
+        default: 'android/key.properties'
+      lane-name:
+        required: false
+        type: string
+        default: release
+      lane-options:
+        required: false
+        type: string
+    secrets:
+      encoded-keystore:
+        required: true
+      encoded-keystore-properties:
+        required: true
+      encoded-google-play-service-account:
+        required: true
+
+jobs:
+  default:
+    name: Build Flutter App Release Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 
+
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'zulu'
+          java-version: '11'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v1.5.3
+        with:
+          channel: 'stable'
+
+      - name: Setup Fastlane
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.6'
+          bundler-cache: true
+          working-directory: android
+          
+      - name: Install flutter packages
+        run: flutter pub get
+
+      - name: Setup keystore
+        run: |
+          echo "$KEYSTORE" | base64 --decode > ${{ inputs.keystore-path }}
+          echo "$KEY_PROPERTIES" | base64 --decode > ${{ inputs.keystore-properties-path }}
+        env:
+          KEYSTORE: ${{ secrets.encoded-keystore }}
+          KEY_PROPERTIES: ${{ secrets.encoded-keystore-properties }}
+
+      - name: Get build name 
+        run: echo version=$(echo $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0) | cut -b 2-).$(git rev-list $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0).. --count) >> $GITHUB_ENV
+
+      - name: Get next play store version code
+        id: getVersionCode
+        run: bundle exec fastlane getVersionCode track:${{ inputs.track }}
+        working-directory: android
+        env:
+          service_account: echo "${{ secrets.PLAY_STORE_SERVICE_ACCOUNT }}" | base64 --decode
+
+      - name: Build
+        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
+        
+      - name: Release to Google Play
+        run: |
+          bundle exec fastlane ${{ inputs.lane-name }} ${{ inputs.lane-options }}
+        working-directory: android
+        env:
+          track: ${{ inputs.track }}
+          service_account: echo "${{ secrets.encoded-google-play-service-account }}" | base64 --decode
+          validate_only: ${{ inputs.dry-run }}
