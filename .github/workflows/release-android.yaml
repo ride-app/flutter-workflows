@@ -1,5 +1,3 @@
-name: Release
-
 on:
   workflow_call:
     inputs:
@@ -14,7 +12,7 @@ on:
       build-number:
         required: false
         type: number
-        default: 1
+        default: '1'
       track:
         required: false
         type: string
@@ -27,13 +25,21 @@ on:
         required: false
         type: string
         default: 'android/key.properties'
+      google-play-service-account-path:
+        required: false
+        type: string
+        default: 'android/play-store-credentials.json'
       lane-name:
         required: false
         type: string
-        default: release
+        default: production
       lane-options:
         required: false
         type: string
+      dry-run:
+        required: false
+        type: boolean
+        default: 'false'
     secrets:
       encoded-keystore:
         required: true
@@ -44,7 +50,7 @@ on:
 
 jobs:
   default:
-    name: Build Flutter App Release Build
+    name: Build and Deploy to Play Store
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -81,27 +87,26 @@ jobs:
           KEYSTORE: ${{ secrets.encoded-keystore }}
           KEY_PROPERTIES: ${{ secrets.encoded-keystore-properties }}
 
-      - name: Get build name 
-        run: echo version=$(echo $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0) | cut -b 2-).$(git rev-list $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0).. --count) >> $GITHUB_ENV
+      - name: Setup play store service acoount
+        run: echo "${{ secrets.encoded-google-play-service-account }}" | base64 --decode >> ${{ inputs.google-play-service-account-path }}
 
-      - name: Get next play store version code
-        id: getVersionCode
+      - name: Get build name 
+        run: echo build_name=$(echo $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0) | cut -b 2-).$(git rev-list $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0).. --count) >> $GITHUB_ENV
+
+      - name: Get current play store version code
         run: bundle exec fastlane getVersionCode track:${{ inputs.track }}
         working-directory: android
         env:
-          service_account: echo "${{ secrets.PLAY_STORE_SERVICE_ACCOUNT }}" | base64 --decode
+          service_account: echo "${{ secrets.encoded-google-play-service-account }}" | base64 --decode
 
       # - name: Build
       #   run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
 
       - name: Build
-        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{env.version}} --build-number=${{env.build_number}} --dart-define=${{ inputs.args }}
-        
-      - name: Release to Google Play
-        run: |
-          bundle exec fastlane ${{ inputs.lane-name }} ${{ inputs.lane-options }}
-        working-directory: android
+        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ env.build_name }} --build-number=${{ env.build_number }} --dart-define=${{ inputs.args }}
         env:
-          track: ${{ inputs.track }}
-          service_account: echo "${{ secrets.encoded-google-play-service-account }}" | base64 --decode
-          validate_only: ${{ inputs.dry-run }}
+          build_number: $(( ${{env.VERSION_CODE}} + 1 ))
+        
+      - name: Upload to Google Play
+        run: bundle exec fastlane ${{ inputs.lane-name }} dry_run:${{ inputs.dry-run }} ${{ inputs.lane-options }}
+        working-directory: android

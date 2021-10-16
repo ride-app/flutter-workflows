@@ -1,5 +1,3 @@
-name: Firebase App Distribution
-
 on:
   workflow_call:
     inputs:
@@ -15,10 +13,6 @@ on:
         required: false
         type: string
         default: '1'
-      group:
-        required: false
-        type: string
-        default: 'production'
       keystore-path:
         required: false
         type: string
@@ -31,17 +25,20 @@ on:
         required: false
         type: string
         default: firebase
+      lane-options:
+        required: false
+        type: string
     secrets:
       encoded-keystore:
         required: true
       encoded-keystore-properties:
         required: true
-      encoded-google-play-service-account:
+      encoded-firebase-service-account:
         required: true
 
 jobs:
   default:
-    name: Build Flutter App Firebase App Distribution
+    name: Build and Deploy to Firebase App Distribution
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -78,18 +75,21 @@ jobs:
           KEYSTORE: ${{ secrets.encoded-keystore }}
           KEY_PROPERTIES: ${{ secrets.encoded-keystore-properties }}
 
+      - name: Setup Firebase Service Account
+        run: |
+          echo "${{ secrets.encoded-firebse-service-account }}" > firebase_service_account.json
+          export GOOGLE_APPLICATION_CREDENTIALS=firebase_service_account.json
+        working-directory: android
+
       - name: Get build name 
-        run: echo version=$(echo $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0) | cut -b 2-).$(git rev-list $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0).. --count) >> $GITHUB_ENV
+        run: echo build_name=$(echo $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0) | cut -b 2-).$(git rev-list $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0).. --count) >> $GITHUB_ENV
 
       # - name: Build
       #   run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
 
       - name: Build
-        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{env.version}} --build-number=${{env.build_number}} --dart-define=${{ inputs.args }}
+        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ env.build_name }} --dart-define=${{ inputs.args }}
         
-        
-      - name: Upload to Firebase
-        run: bundle exec fastlane ${{ inputs.lane-name }}
+      - name: Upload to Firebase App Distribution
+        run: bundle exec fastlane ${{ inputs.lane-name }} ${{ inputs.options }}
         working-directory: android
-        env:
-          service_account_path: ${{ inputs.service-account-path }}
