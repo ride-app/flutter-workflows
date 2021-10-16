@@ -77,7 +77,7 @@ jobs:
 
       - name: Setup Firebase Service Account
         run: |
-          echo "${{ secrets.encoded-firebse-service-account }}" > firebase_service_account.json
+          echo "${{ secrets.encoded-firebse-service-account }}" | base64 --decode > firebase_service_account.json
           export GOOGLE_APPLICATION_CREDENTIALS=firebase_service_account.json
         working-directory: android
 
