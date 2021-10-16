@@ -103,4 +103,4 @@ jobs:
         run: bundle exec fastlane ${{ inputs.lane-name }} ${{ inputs.options }}
         working-directory: android
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ./firebase_service_account.json
+          GOOGLE_APPLICATION_CREDENTIALS: firebase_service_account.json
