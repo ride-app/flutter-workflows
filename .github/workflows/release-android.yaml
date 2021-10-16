@@ -96,8 +96,6 @@ jobs:
       - name: Get current play store version code
         run: bundle exec fastlane getVersionCode track:${{ inputs.track }}
         working-directory: android
-        env:
-          service_account: echo "${{ secrets.encoded-google-play-service-account }}" | base64 --decode
 
       # - name: Build
       #   run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
