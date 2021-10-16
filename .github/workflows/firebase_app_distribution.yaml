@@ -79,12 +79,8 @@ jobs:
           KEY_PROPERTIES: ${{ secrets.encoded-keystore-properties }}
 
       - name: Setup Firebase Service Account
-        run: |
-          echo "$FIREBASE_SERVICE_ACCOUNT" > firebase_service_account.json
-          
+        run: echo ${{ secrets.encoded-firebase-service-account }} > firebase_service_account.json      
         working-directory: android
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.encoded-firebase-service-account }}
 
       # - name: set google application credential
       #   run: echo "::set-env name=GOOGLE_APPLICATION_CREDENTIALS::./firebase_service_account.json"
