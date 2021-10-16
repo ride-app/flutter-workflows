@@ -81,10 +81,14 @@ jobs:
       - name: Setup Firebase Service Account
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" | base64 --decode > firebase_service_account.json
-          export GOOGLE_APPLICATION_CREDENTIALS=./firebase_service_account.json
+          
         working-directory: android
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.encoded-firebase-service-account }}
+
+      - name: set google application credential
+        run: echo "::set-env name=GOOGLE_APPLICATION_CREDENTIALS::./firebase_service_account.json"
+        working-directory: android
 
       - name: Get build name 
         run: echo build_name=$(echo $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0) | cut -b 2-).$(git rev-list $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0).. --count) >> $GITHUB_ENV
