@@ -81,7 +81,7 @@ jobs:
       - name: Setup Firebase Service Account
         run: |
           echo "$FIREBASE_SERVICE_ACCOUNT" | base64 --decode > firebase_service_account.json
-          export GOOGLE_APPLICATION_CREDENTIALS=firebase_service_account.json
+          export GOOGLE_APPLICATION_CREDENTIALS=./firebase_service_account.json
         working-directory: android
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.encoded-firebase-service-account }}
