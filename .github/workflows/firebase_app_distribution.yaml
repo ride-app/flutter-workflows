@@ -79,6 +79,9 @@ jobs:
           KEYSTORE: ${{ secrets.encoded-keystore }}
           KEY_PROPERTIES: ${{ secrets.keystore-properties }}
 
+      - run: cat ${{ inputs.keystore-properties-path }}
+        working-directory: android
+
       - name: Setup Firebase Service Account
         run: echo "$FIREBASE_SERVICE_ACCOUNT" > firebase_service_account.json
         working-directory: android
