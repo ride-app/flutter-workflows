@@ -30,7 +30,7 @@ on:
     secrets:
       encoded-keystore:
         required: true
-      keystore-properties:
+      encoded-keystore-properties:
         required: true
       firebase-service-account:
         required: true
@@ -68,12 +68,12 @@ jobs:
 
       - name: Setup keystore
         run: |
-          echo "$KEY_PROPERTIES" > key.properties
+          echo "$KEY_PROPERTIES" | base64 --decode > key.properties
           echo "$KEYSTORE" | base64 --decode > ${{ inputs.keystore-path }}
         working-directory: android
         env:
           KEYSTORE: ${{ secrets.encoded-keystore }}
-          KEY_PROPERTIES: ${{ secrets.keystore-properties }}
+          KEY_PROPERTIES: ${{ secrets.encoded-keystore-properties }}
 
       - run: cat 'key.properties'
         working-directory: android
