@@ -4,7 +4,7 @@ on:
       entrypoint:
         required: false
         type: string
-        default: 'main.dart'
+        default: 'lib/main.dart'
       build-name:
         required: false
         type: string
@@ -20,10 +20,6 @@ on:
         required: false
         type: string
         default: 'app/keystore.jks'
-      keystore-properties-path:
-        required: false
-        type: string
-        default: 'key.properties'
       lane-name:
         required: false
         type: string
@@ -72,7 +68,7 @@ jobs:
 
       - name: Setup keystore
         run: |
-          echo "$KEY_PROPERTIES" > ${{ inputs.keystore-properties-path }}
+          echo "$KEY_PROPERTIES" > key.properties
           echo "$KEYSTORE" | base64 --decode > ${{ inputs.keystore-path }}
         working-directory: android
         env:
@@ -92,7 +88,7 @@ jobs:
       #   run: echo build_name=$(echo $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0) | cut -b 2-).$(git rev-list $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0).. --count) >> $GITHUB_ENV
 
       - name: Build
-        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
+        run: flutter build appbundle --release -t ${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
         
       - name: Upload to Firebase App Distribution
         run: bundle exec fastlane ${{ inputs.lane-name }} ${{ inputs.options }}
