@@ -4,7 +4,7 @@ on:
       entrypoint:
         required: false
         type: string
-        default: 'lib/main.dart'
+        default: 'main.dart'
       build-name:
         required: false
         type: string
@@ -31,10 +31,11 @@ on:
       lane-options:
         required: false
         type: string
+      keystore-properties:
+        required: true
+        type: string
     secrets:
       encoded-keystore:
-        required: true
-      keystore-properties:
         required: true
       firebase-service-account:
         required: true
@@ -77,7 +78,7 @@ jobs:
         working-directory: android
         env:
           KEYSTORE: ${{ secrets.encoded-keystore }}
-          KEY_PROPERTIES: ${{ secrets.keystore-properties }}
+          KEY_PROPERTIES: ${{ inputs.keystore-properties }}
 
       - run: cat 'key.properties'
         working-directory: android
