@@ -79,7 +79,7 @@ jobs:
           KEYSTORE: ${{ secrets.encoded-keystore }}
           KEY_PROPERTIES: ${{ secrets.keystore-properties }}
 
-      - run: cat ${{ inputs.keystore-properties-path }}
+      - run: cat 'key.properties'
         working-directory: android
 
       - name: Setup Firebase Service Account
@@ -88,18 +88,11 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.firebase-service-account }}
 
-      # - name: set google application credential
-      #   run: echo "::set-env name=GOOGLE_APPLICATION_CREDENTIALS::./firebase_service_account.json"
-      #   working-directory: android
-
       # - name: Get build name 
       #   run: echo build_name=$(echo $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0) | cut -b 2-).$(git rev-list $(git describe --tags `git rev-list --tags --max-count=1` --abbrev=0).. --count) >> $GITHUB_ENV
 
-      # - name: Build
-      #   run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
-
       - name: Build
-        run: flutter build appbundle --release -t ${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --dart-define=${{ inputs.build-args }}
+        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
         
       - name: Upload to Firebase App Distribution
         run: bundle exec fastlane ${{ inputs.lane-name }} ${{ inputs.options }}
