@@ -56,7 +56,7 @@ jobs:
 
       - name: Setup keystore
         run: |
-          echo "$KEY_PROPERTIES" > key.properties
+          echo "$KEY_PROPERTIES" | base64 --decode > key.properties
           echo "$KEYSTORE" | base64 --decode > ${{ inputs.keystore-path }}
         working-directory: android
         env:
