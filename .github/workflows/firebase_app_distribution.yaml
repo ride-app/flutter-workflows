@@ -1,18 +1,6 @@
 on:
   workflow_call:
     inputs:
-      # entrypoint:
-      #   required: false
-      #   type: string
-      #   default: 'lib/main.dart'
-      # build-name:
-      #   required: false
-      #   type: string
-      #   default: '0.0.1'
-      # build-number:
-      #   required: false
-      #   type: string
-      #   default: '1'
       build-args:
         required: false
         type: string
@@ -68,7 +56,7 @@ jobs:
 
       - name: Setup keystore
         run: |
-          echo "$KEY_PROPERTIES" | base64 --decode > key.properties
+          echo "$KEY_PROPERTIES" > key.properties
           echo "$KEYSTORE" | base64 --decode > ${{ inputs.keystore-path }}
         working-directory: android
         env:
