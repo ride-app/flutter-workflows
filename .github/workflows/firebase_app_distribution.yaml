@@ -4,7 +4,7 @@ on:
       entrypoint:
         required: false
         type: string
-        default: 'main.dart'
+        default: 'lib/main.dart'
       build-name:
         required: false
         type: string
@@ -19,11 +19,11 @@ on:
       keystore-path:
         required: false
         type: string
-        default: 'android/app/keystore.jks'
+        default: 'app/keystore.jks'
       keystore-properties-path:
         required: false
         type: string
-        default: 'android/key.properties'
+        default: 'key.properties'
       lane-name:
         required: false
         type: string
@@ -34,9 +34,9 @@ on:
     secrets:
       encoded-keystore:
         required: true
-      encoded-keystore-properties:
+      keystore-properties:
         required: true
-      encoded-firebase-service-account:
+      firebase-service-account:
         required: true
 
 jobs:
@@ -72,17 +72,18 @@ jobs:
 
       - name: Setup keystore
         run: |
+          echo "$KEY_PROPERTIES" > ${{ inputs.keystore-properties-path }}
           echo "$KEYSTORE" | base64 --decode > ${{ inputs.keystore-path }}
-          echo "$KEY_PROPERTIES" | base64 --decode > ${{ inputs.keystore-properties-path }}
+        working-directory: android
         env:
           KEYSTORE: ${{ secrets.encoded-keystore }}
-          KEY_PROPERTIES: ${{ secrets.encoded-keystore-properties }}
+          KEY_PROPERTIES: ${{ secrets.keystore-properties }}
 
       - name: Setup Firebase Service Account
         run: echo "$FIREBASE_SERVICE_ACCOUNT" > firebase_service_account.json
         working-directory: android
         env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.encoded-firebase-service-account }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.firebase-service-account }}
 
       # - name: set google application credential
       #   run: echo "::set-env name=GOOGLE_APPLICATION_CREDENTIALS::./firebase_service_account.json"
@@ -95,7 +96,7 @@ jobs:
       #   run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ inputs.build-name }} --build-number=${{ inputs.build_number }} --dart-define=${{ inputs.args }}
 
       - name: Build
-        run: flutter build appbundle --release -t lib/${{ inputs.entrypoint }} --build-name=${{ env.build_name }} --dart-define=${{ inputs.build-args }}
+        run: flutter build appbundle --release -t ${{ inputs.entrypoint }} --build-name=${{ env.build_name }} --dart-define=${{ inputs.build-args }}
         
       - name: Upload to Firebase App Distribution
         run: bundle exec fastlane ${{ inputs.lane-name }} ${{ inputs.options }}
