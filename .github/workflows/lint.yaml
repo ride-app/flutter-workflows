@@ -2,10 +2,20 @@ on:
   workflow_call
 
 jobs:
-  lint:
+  default:
+    name: Lint
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Setup Flutter Project
-      uses: ./.github/actions/setup
+    - uses: actions/setup-java@v2
+      with:
+        distribution: zulu
+        java-version: '11'
+    - uses: subosito/flutter-action@v2.0.3
+      with:
+        channel: 'stable'
+    - name: Get Packages
+      run: flutter pub get
+    - name: Run build_runner
+      run: flutter pub run build_runner build --delete-conflicting-outputs
     - run: flutter analyze
