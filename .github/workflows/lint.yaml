@@ -13,6 +13,7 @@ jobs:
     - uses: subosito/flutter-action@v2.0.4
       with:
         channel: 'stable'
+
     - name: Cache pubspec dependencies
       uses: actions/cache@v2
       with:
@@ -27,6 +28,16 @@ jobs:
           build-pubspec-
     - name: Get Packages
       run: flutter pub get
+
+    - name: Cache build runner
+      uses: actions/cache@v2
+      with:
+        path: |
+          **/.dart_tool/build
+        key: build-runner-${{ hashFiles('**/asset_graph.json') }}-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          build-runner-
     - name: Run build_runner
       run: flutter pub run build_runner build --delete-conflicting-outputs
+      
     - run: flutter analyze
