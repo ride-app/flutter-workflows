@@ -18,7 +18,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: |
-          ${{ env.FLUTTER_HOME }}/.pub-cache
+          ${{ env.PUB_CACHE }}
           **/.packages
           **/.flutter-plugins
           **/.flutter-plugin-dependencies
