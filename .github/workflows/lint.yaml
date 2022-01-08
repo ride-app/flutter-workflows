@@ -16,15 +16,15 @@ jobs:
     - name: Cache pubspec dependencies
     - uses: actions/cache@v2
       with:
-      path: |
-        ${{ env.FLUTTER_HOME }}/.pub-cache
-        **/.packages
-        **/.flutter-plugins
-        **/.flutter-plugin-dependencies
-        **/.dart_tool/package_config.json
-      key: build-pubspec-${{ hashFiles('**/pubspec.lock') }}
-      restore-keys: |
-        build-pubspec-
+        path: |
+          ${{ env.FLUTTER_HOME }}/.pub-cache
+          **/.packages
+          **/.flutter-plugins
+          **/.flutter-plugin-dependencies
+          **/.dart_tool/package_config.json
+        key: build-pubspec-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: |
+          build-pubspec-
     - name: Get Packages
       run: flutter pub get
     - name: Run build_runner
