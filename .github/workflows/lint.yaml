@@ -15,6 +15,7 @@ jobs:
         channel: 'stable'
 
     - name: Cache pubspec dependencies
+      id: cache-packages
       uses: actions/cache@v2
       with:
         path: |
@@ -27,6 +28,7 @@ jobs:
         restore-keys: |
           build-pubspec-
     - name: Get Packages
+      if: steps.cache-packages.outputs.cache-hit != 'true'
       run: flutter pub get
 
     - name: Cache build runner
