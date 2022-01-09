@@ -22,10 +22,6 @@ jobs:
         key: flutter-${{inputs.flutter-version}}
         restore-keys: |
           flutter-
-    - uses: subosito/flutter-action@v2.0.4
-      with:
-        flutter-version: ${{inputs.flutter-version}}
-
     - name: Cache pubspec dependencies
       id: cache-packages
       uses: actions/cache@v2
@@ -39,9 +35,6 @@ jobs:
         key: build-pubspec-${{ hashFiles('**/pubspec.lock') }}
         restore-keys: |
           build-pubspec-
-    - name: Get Packages
-      run: flutter pub get
-
     - name: Cache build runner
       uses: actions/cache@v2
       with:
@@ -50,7 +43,12 @@ jobs:
         key: build-runner-${{ hashFiles('**/asset_graph.json') }}-${{ hashFiles('**/pubspec.lock') }}
         restore-keys: |
           build-runner-
-    - name: Run build_runner
-      run: flutter pub run build_runner build
-      
+
+    - name: Install Flutter
+      uses: subosito/flutter-action@v2.0.4
+      with:
+        flutter-version: ${{inputs.flutter-version}}
+
+    - run: flutter pub get
+    - run: flutter pub run build_runner build
     - run: flutter analyze
