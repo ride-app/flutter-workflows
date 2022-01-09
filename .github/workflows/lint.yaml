@@ -40,7 +40,6 @@ jobs:
         restore-keys: |
           build-pubspec-
     - name: Get Packages
-      if: steps.cache-packages.outputs.cache-hit != 'true'
       run: flutter pub get
 
     - name: Cache build runner
