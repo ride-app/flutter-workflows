@@ -14,7 +14,7 @@ jobs:
       with:
         distribution: zulu
         java-version: '17'
-    - name: Cache flutter
+    - name: Load Flutter Cache
       uses: actions/cache@v2
       with:
         path: ${{ runner.tool_cache }}/flutter
@@ -26,7 +26,7 @@ jobs:
       with:
         flutter-version: ${{inputs.flutter-version}}
         
-    - name: Cache pubspec dependencies
+    - name: Load Pubspec Dependencies Cache
       uses: actions/cache@v2
       with:
         path: |
@@ -38,15 +38,6 @@ jobs:
         key: pubspec-${{ hashFiles('**/pubspec.lock') }}
         restore-keys: |
           pubspec-
-    
-    - name: Cache build runner
-      uses: actions/cache@v2
-      with:
-        path: |
-          **/.dart_tool/build
-        key: build-runner-${{ hashFiles('**/asset_graph.json') }}-${{ hashFiles('**/pubspec.lock') }}
-        restore-keys: |
-          build-runner-
           
     - run: flutter pub get
     - run: flutter pub run build_runner build
