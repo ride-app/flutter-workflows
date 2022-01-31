@@ -35,5 +35,6 @@ jobs:
           pubspec-
           
     - run: flutter pub get
+    - run: flutter format .
     - run: flutter pub run build_runner build
     - run: flutter analyze
