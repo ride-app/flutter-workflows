@@ -21,7 +21,6 @@ jobs:
         flutter-version: ${{inputs.flutter-version}}
         channel: 'stable'
         cache: true
-        cache-key: flutter-invalid-cache
         
     - name: Load Pubspec Dependencies Cache
       uses: actions/cache@v3
