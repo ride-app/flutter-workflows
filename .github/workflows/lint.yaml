@@ -4,7 +4,7 @@ on:
       flutter-version:
         required: false
         type: string
-        default: '2.x'
+        default: '3.x'
 jobs:
   lint:
     runs-on: ubuntu-latest
