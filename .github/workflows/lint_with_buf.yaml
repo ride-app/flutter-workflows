@@ -8,7 +8,6 @@ on:
       buf-user:
         required: true
         type: string
-        
     secrets:
       buf-token:
         required: true
@@ -53,7 +52,7 @@ jobs:
       run: echo ${{ secrets.buf-token }} | buf registry login --username ${{ inputs.buf-user }} --token-stdin
 
     - name: Build protobuf
-      run: buf generate
+      run: buf generate --include-wkt --include-imports
       
     - run: flutter format .
     - run: flutter pub run build_runner build
