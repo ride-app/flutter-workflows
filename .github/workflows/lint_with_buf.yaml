@@ -5,6 +5,14 @@ on:
         required: false
         type: string
         default: '3.x'
+      buf-user:
+        required: true
+        type: string
+        
+    secrets:
+      buf-token:
+        required: true
+
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -42,7 +50,7 @@ jobs:
         github_token: ${{ github.token }}
 
     - name: Authenticate buf
-      run: echo ${{ secrets.BUF_TOKEN }} | buf registry login --username ${{ env.BUF_USER }} --token-stdin
+      run: echo ${{ secrets.buf-token }} | buf registry login --username ${{ env.buf-user }} --token-stdin
 
     - name: Build protobuf
       run: buf generate
