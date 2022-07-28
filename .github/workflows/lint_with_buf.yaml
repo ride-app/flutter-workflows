@@ -53,9 +53,9 @@ jobs:
         github_token: ${{ github.token }}
 
     - name: Authenticate buf
-      run: echo ${{ env.token }} | buf registry login --username ${{ inputs.buf-user }} --token-stdin
+      run: echo $TOKEN | buf registry login --username ${{ inputs.buf-user }} --token-stdin
       env:
-        token: ${{ secrets.buf-token }}
+        TOKEN: ${{ secrets.buf-token }}
 
     - name: Build protobuf
       run: buf generate --include-wkt --include-imports
