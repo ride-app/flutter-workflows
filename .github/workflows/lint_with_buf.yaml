@@ -54,7 +54,7 @@ jobs:
 
     - name: Authenticate buf
       run: echo ${{ env.token }} | buf registry login --username ${{ inputs.buf-user }} --token-stdin
-      with:
+      env:
         token: ${{ secrets.buf-token }}
 
     - name: Build protobuf
