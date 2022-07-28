@@ -7,7 +7,7 @@ on:
         required: false
         type: string
         default: '3.x'
-        
+
       buf-user:
         required: true
         type: string
@@ -53,7 +53,9 @@ jobs:
         github_token: ${{ github.token }}
 
     - name: Authenticate buf
-      run: echo ${{ secrets.buf-token }} | buf registry login --username ${{ inputs.buf-user }} --token-stdin
+      run: echo ${{ env.token }} | buf registry login --username ${{ inputs.buf-user }} --token-stdin
+      with:
+        token: ${{ secrets.buf-token }}
 
     - name: Build protobuf
       run: buf generate --include-wkt --include-imports
