@@ -1,3 +1,5 @@
+name: Lint with Buf generate
+
 on:
   workflow_call:
     inputs:
@@ -5,9 +7,11 @@ on:
         required: false
         type: string
         default: '3.x'
+        
       buf-user:
         required: true
         type: string
+
     secrets:
       buf-token:
         required: true
