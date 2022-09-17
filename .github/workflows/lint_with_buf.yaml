@@ -48,7 +48,7 @@ jobs:
           
     - run: flutter pub get
     
-    - uses: bufbuild/buf-setup-action@v1.7.0
+    - uses: bufbuild/buf-setup-action@v1.8.0
       with:
         github_token: ${{ github.token }}
 
