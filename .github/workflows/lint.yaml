@@ -16,7 +16,7 @@ jobs:
         java-version: '17'
         
     - name: Install Flutter
-      uses: subosito/flutter-action@v2.12.0
+      uses: subosito/flutter-action@v2.13.0
       with:
         flutter-version: ${{inputs.flutter-version}}
         channel: 'stable'
